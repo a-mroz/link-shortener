@@ -1,0 +1,26 @@
+{
+  "name": "link-shortener",
+  "version": "1.0.0",
+  "description": "Simple link-shortener to play with AWS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/a-mroz/link-shortener.git"
+  },
+  "author": "amroz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a-mroz/link-shortener/issues"
+  },
+  "homepage": "https://github.com/a-mroz/link-shortener#readme",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "serverless-offline": "^6.8.0",
+    "serverless": "^2.16.1"
+  }
+}
