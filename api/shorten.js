@@ -1,9 +1,11 @@
 "use strict";
 
 exports.handler = async (event, context, callback) => {
-  console.log(event);
-  console.log(context);
-  console.log(callback);
+  const body = JSON.parse(event["body"]);
+
+  if (!body || !body.url) {
+    throw "URL is required";
+  }
 
   const response = {
     statusCode: 200,

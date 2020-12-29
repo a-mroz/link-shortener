@@ -23,6 +23,8 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: nodejs12.x
+  apiGateway:
+    shouldStartNameWithService: true
 
 # you can overwrite defaults here
 #  stage: dev
@@ -59,7 +61,13 @@ provider:
 
 functions:
   shorten:
-    handler: shorten.handler
+    handler: api/shorten.handler
+    description: Return shortened version of a link.
+    events:
+    - http:
+        path: shorten
+        method: post
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
