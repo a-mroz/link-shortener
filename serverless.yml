@@ -25,6 +25,16 @@ provider:
   runtime: nodejs12.x
   apiGateway:
     shouldStartNameWithService: true
+  environment:
+      URLS_TABLE: "urls-${opt:stage, self:provider.stage}"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "*"
 
 # you can overwrite defaults here
 #  stage: dev
@@ -61,12 +71,13 @@ provider:
 
 functions:
   shorten:
-    handler: api/shorten.handler
-    description: Return shortened version of a link.
+    handler: src/api/shorten.handler
+    description: Returns shortened version of a link.
+
     events:
-    - http:
-        path: shorten
-        method: post
+      - http:
+          path: shorten
+          method: post
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -120,5 +131,36 @@ functions:
 #       Description: "Description for the output"
 #       Value: "Some output value"
 
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      migrate: true
+
+resources:
+  Resources:
+    UrlsDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "shortlink"
+            AttributeType: "S"
+        KeySchema:
+          -
+            AttributeName: "shortlink"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: "${self:provider.environment.URLS_TABLE}"
+
 plugins:
-- serverless-offline
+  # order is important
+  - serverless-dynamodb-local
+  - serverless-offline
+  # - serverless-event-body-option # doesn't work - https://github.com/jubel-han/serverless-event-body-option/issues/1

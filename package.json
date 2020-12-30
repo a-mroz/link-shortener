@@ -17,10 +17,13 @@
   },
   "homepage": "https://github.com/a-mroz/link-shortener#readme",
   "dependencies": {
-
+    "aws-sdk": "^2.819.0",
+    "serverless-dynamodb-client": "0.0.2"
   },
   "devDependencies": {
-    "serverless-offline": "^6.8.0",
-    "serverless": "^2.16.1"
+    "serverless": "^2.16.1",
+    "serverless-dynamodb-local": "^0.2.39",
+    "serverless-event-body-option": "^1.2.0",
+    "serverless-offline": "^6.8.0"
   }
 }
