@@ -162,5 +162,5 @@ resources:
 plugins:
   # order is important
   - serverless-dynamodb-local
-  - serverless-offline
   # - serverless-event-body-option # doesn't work - https://github.com/jubel-han/serverless-event-body-option/issues/1
+  - serverless-offline

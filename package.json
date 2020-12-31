@@ -4,7 +4,10 @@
   "description": "Simple link-shortener to play with AWS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "serverless offline",
+    "deploy": "serverless deploy",
+    "dynamodb": "serverless dynamodb start"
   },
   "repository": {
     "type": "git",
