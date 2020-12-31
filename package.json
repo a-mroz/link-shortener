@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/a-mroz/link-shortener#readme",
   "dependencies": {
+    "@braintree/sanitize-url": "^5.0.0",
     "aws-sdk": "^2.819.0",
     "serverless-dynamodb-client": "0.0.2"
   },
