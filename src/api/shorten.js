@@ -53,8 +53,21 @@ exports.handler = async (event, context, callback) => {
   );
 };
 
+const ALPHABET =
+  "abcdefghijklmnopqrstuwvxyzABCDEFGHIJLKMNOPQRSTUWVXYZ0123456789";
+
 function generateShortlink(timestamp) {
-  return timestamp.getTime() + randomInt(); //TODO convert to base62
+  return convert(timestamp.getTime() + randomInt());
+}
+
+function convert(number, base = 62) {
+  // TODO check 10 < base <= 62, move to a separate service
+  const res = [];
+  while (number > 0) {
+    res.push(ALPHABET[number % base]);
+    number = number / base;
+  }
+  return res.join("");
 }
 
 function randomInt() {
