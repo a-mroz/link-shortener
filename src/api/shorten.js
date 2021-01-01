@@ -41,7 +41,7 @@ exports.handler = async (event, context, callback) => {
         console.error("Error saving shortened link", error);
         return callback(error);
       } else {
-        console.log(data);
+        console.log(shortlink);
 
         const response = {
           statusCode: 200,
@@ -57,7 +57,7 @@ const ALPHABET =
   "abcdefghijklmnopqrstuwvxyzABCDEFGHIJLKMNOPQRSTUWVXYZ0123456789";
 
 function generateShortlink(timestamp) {
-  return convert(timestamp.getTime() + randomInt());
+  return convert(parseInt(timestamp.getTime() + "" + randomInt()));
 }
 
 function convert(number, base = 62) {
@@ -71,5 +71,5 @@ function convert(number, base = 62) {
 }
 
 function randomInt() {
-  return Math.floor(Math.random() * 10_000);
+  return Math.floor(Math.random() * 1024);
 }
