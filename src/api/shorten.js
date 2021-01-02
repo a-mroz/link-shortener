@@ -2,6 +2,7 @@
 
 const dynamodb = require("serverless-dynamodb-client").doc;
 const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
+const { encode } = require("./baseEncoder");
 
 const { URLS_TABLE } = process.env;
 
@@ -53,21 +54,8 @@ exports.handler = async (event, context, callback) => {
   );
 };
 
-const ALPHABET =
-  "abcdefghijklmnopqrstuwvxyzABCDEFGHIJLKMNOPQRSTUWVXYZ0123456789";
-
 function generateShortlink(timestamp) {
-  return convert(parseInt(timestamp.getTime() + "" + randomInt()));
-}
-
-function convert(number, base = 62) {
-  // TODO check 10 < base <= 62, move to a separate service
-  const res = [];
-  while (number > 0) {
-    res.push(ALPHABET[number % base]);
-    number = number / base;
-  }
-  return res.join("");
+  return encode(parseInt(timestamp.getTime() + "" + randomInt()));
 }
 
 function randomInt() {
