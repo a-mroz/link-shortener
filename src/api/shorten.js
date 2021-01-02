@@ -2,7 +2,7 @@
 
 const dynamodb = require("serverless-dynamodb-client").doc;
 const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
-const { encode } = require("./baseEncoder");
+const { encode, decode } = require("./base58Encoder");
 
 const { URLS_TABLE } = process.env;
 
@@ -59,5 +59,5 @@ function generateShortlink(timestamp) {
 }
 
 function randomInt() {
-  return Math.floor(Math.random() * 1024);
+  return Math.floor(Math.random() * 128);
 }
