@@ -73,11 +73,14 @@ functions:
   shorten:
     handler: src/api/shorten.handler
     description: Returns shortened version of a link.
-
     events:
-      - http:
-          path: shorten
-          method: post
+      - http: POST /
+
+  expand:
+    handler: src/api/expand.handler
+    description: Expands shortened version of link to a full url and redirects to it.
+    events:
+      - http: GET /
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

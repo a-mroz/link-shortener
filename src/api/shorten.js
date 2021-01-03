@@ -2,13 +2,15 @@
 
 const dynamodb = require("serverless-dynamodb-client").doc;
 const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
-const { encode, decode } = require("./base58Encoder");
+const { encode } = require("./base58Encoder");
 
 const { URLS_TABLE } = process.env;
 
 const BLANK_URL = "about:blank";
 
 exports.handler = async (event, context, callback) => {
+  console.log("Received event:", JSON.stringify(event, null, 2));
+
   if (!event["body"]) {
     return callback("URL is required");
   }
