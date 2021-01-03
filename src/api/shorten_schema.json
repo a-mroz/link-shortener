@@ -1,0 +1,15 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "The schema for shortening url body.",
+  "required": ["url"],
+  "properties": {
+    "url": {
+      "type": "string",
+      "title": "The URL to be shortened. Needs to start with a supported schema - http, https, ftp.",
+      "format": "uri",
+      "pattern": "^(https?://|ftp://)"
+    }
+  }
+}

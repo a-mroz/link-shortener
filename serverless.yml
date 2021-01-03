@@ -74,7 +74,12 @@ functions:
     handler: src/api/shorten.handler
     description: Returns shortened version of a link.
     events:
-      - http: POST /
+      - http:
+          path: /
+          method: POST
+          request:
+            schema:
+              application/json: ${file(src/api/shorten_schema.json)}
 
   expand:
     handler: src/api/expand.handler
