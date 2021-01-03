@@ -27,8 +27,8 @@ exports.handler = async (event, context, callback) => {
   const date = new Date();
   const shortlink = generateShortlink(date);
 
-  dynamodb.put(
-    {
+  await dynamodb
+    .put({
       TableName: URLS_TABLE,
       Item: {
         shortlink,
@@ -38,22 +38,13 @@ exports.handler = async (event, context, callback) => {
       },
       ReturnConsumedCapacity: "TOTAL",
       ConditionExpression: "attribute_not_exists(shortlink)",
-    },
-    (error, data) => {
-      if (error) {
-        console.error("Error saving shortened link", error);
-        return callback(error);
-      } else {
-        console.log(shortlink);
+    })
+    .promise();
 
-        const response = {
-          statusCode: 200,
-          body: JSON.stringify({ shortlink }),
-        };
-        return response;
-      }
-    }
-  );
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ shortlink }),
+  };
 };
 
 function generateShortlink(timestamp) {

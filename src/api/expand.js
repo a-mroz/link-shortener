@@ -15,35 +15,30 @@ exports.handler = async (event, context, callback) => {
     callback("Invalid shortlink");
   }
 
-  try {
-    const items = await dynamodb
-      .get({
-        TableName: URLS_TABLE,
-        Key: {
-          shortlink,
-        },
-        ProjectionExpression: "shortlink,full_url,expiration_timestamp",
-      })
-      .promise();
-
-    const urlDetails = items.Item;
-
-    console.log(urlDetails);
-    if (!urlDetails) {
-      console.log("here");
-      return {
-        statusCode: 404,
-      };
-    }
-
-    return {
-      statusCode: 302,
-      headers: {
-        Location: urlDetails.full_url,
+  const items = await dynamodb
+    .get({
+      TableName: URLS_TABLE,
+      Key: {
+        shortlink,
       },
+      ProjectionExpression: "shortlink,full_url,expiration_timestamp",
+    })
+    .promise();
+
+  const urlDetails = items.Item;
+
+  console.log(urlDetails);
+
+  if (!urlDetails) {
+    return {
+      statusCode: 404,
     };
-  } catch (error) {
-    console.error(error);
-    callback(new Error("Couldn't fetch data"));
   }
+
+  return {
+    statusCode: 302,
+    headers: {
+      Location: urlDetails.full_url,
+    },
+  };
 };
