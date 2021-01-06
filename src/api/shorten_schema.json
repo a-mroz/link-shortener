@@ -10,6 +10,13 @@
       "title": "The URL to be shortened. Needs to start with a supported schema - http, https, ftp.",
       "format": "uri",
       "pattern": "^(https?://|ftp://)"
+    },
+
+    "expirationHours": {
+      "type": "integer",
+      "title": "Time, after which link should expire. In hours.",
+      "minimum": 1,
+      "maximum": 48
     }
   }
 }

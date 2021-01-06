@@ -5,6 +5,7 @@ const { URLS_TABLE } = process.env;
 exports.handler = async (event, context, callback) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
+  //TODO somehow add this; tests
   if (!event.pathParameters) {
     return callback("Invalid shortlink");
   }
@@ -21,7 +22,8 @@ exports.handler = async (event, context, callback) => {
       Key: {
         shortlink,
       },
-      ProjectionExpression: "shortlink,full_url,expiration_timestamp",
+
+      ProjectionExpression: "shortlink,fullUrl,expirationTimestamp",
     })
     .promise();
 
@@ -29,7 +31,7 @@ exports.handler = async (event, context, callback) => {
 
   console.log(urlDetails);
 
-  if (!urlDetails) {
+  if (!urlDetails || isUrlExpired(urlDetails)) {
     return {
       statusCode: 404,
     };
@@ -38,7 +40,16 @@ exports.handler = async (event, context, callback) => {
   return {
     statusCode: 302,
     headers: {
-      Location: urlDetails.full_url,
+      Location: urlDetails.fullUrl,
     },
   };
 };
+
+// This should be removed by Dynamo TTL feature, but just in case
+function isUrlExpired(urlDetails) {
+  const { expirationTimestamp } = urlDetails;
+
+  return expirationTimestamp
+    ? Date.parse(expirationTimestamp) < new Date()
+    : false;
+}

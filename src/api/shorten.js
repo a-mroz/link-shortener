@@ -24,17 +24,18 @@ exports.handler = async (event, context, callback) => {
     return callback("Valid URL is required");
   }
 
-  const date = new Date();
-  const shortlink = generateShortlink(date);
+  const now = new Date();
+  const shortlink = generateShortlink(now);
 
+  // TODO analytics?
   await dynamodb
     .put({
       TableName: URLS_TABLE,
       Item: {
         shortlink,
-        full_url: url,
-        created_timestamp: date.toISOString(),
-        expiration_timestamp: null,
+        fullUrl: url,
+        createdTimestamp: now.toISOString(),
+        expirationTimestamp: expirationTimestamp(body),
       },
       ReturnConsumedCapacity: "TOTAL",
       ConditionExpression: "attribute_not_exists(shortlink)",
@@ -53,4 +54,19 @@ function generateShortlink(timestamp) {
 
 function randomInt() {
   return Math.floor(Math.random() * 128);
+}
+
+function expirationTimestamp(body) {
+  const { expirationHours } = body;
+
+  if (!expirationHours) {
+    return null;
+  }
+
+  const expirationTimestamp = new Date();
+  expirationTimestamp.setHours(
+    expirationTimestamp.getHours() + expirationHours
+  );
+
+  return expirationTimestamp;
 }

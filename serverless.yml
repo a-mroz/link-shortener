@@ -165,7 +165,11 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
+        TimeToLiveSpecification:
+          AttributeName: "expirationTimestamp"
+          Enabled: True
         TableName: "${self:provider.environment.URLS_TABLE}"
+
 
 plugins:
   # order is important
