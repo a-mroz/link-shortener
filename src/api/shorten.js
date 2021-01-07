@@ -12,7 +12,7 @@ exports.handler = async (event, context, callback) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   if (!event["body"]) {
-    return callback("URL is required");
+    callback("URL is required");
   }
 
   const body =
@@ -21,12 +21,13 @@ exports.handler = async (event, context, callback) => {
   const url = sanitizeUrl(body.url);
 
   if (!url || url === BLANK_URL) {
-    return callback("Valid URL is required");
+    callback("Valid URL is required");
   }
 
   const now = new Date();
   const shortlink = generateShortlink(now);
 
+  const expirationTimestamp = expirationDate(body);
   // TODO analytics?
   await dynamodb
     .put({
@@ -35,7 +36,7 @@ exports.handler = async (event, context, callback) => {
         shortlink,
         fullUrl: url,
         createdTimestamp: now.toISOString(),
-        expirationTimestamp: expirationTimestamp(body),
+        expirationTimestamp,
       },
       ReturnConsumedCapacity: "TOTAL",
       ConditionExpression: "attribute_not_exists(shortlink)",
@@ -44,7 +45,7 @@ exports.handler = async (event, context, callback) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ shortlink }),
+    body: JSON.stringify({ shortlink, expirationTimestamp }),
   };
 };
 
@@ -56,11 +57,11 @@ function randomInt() {
   return Math.floor(Math.random() * 128);
 }
 
-function expirationTimestamp(body) {
+function expirationDate(body) {
   const { expirationHours } = body;
 
   if (!expirationHours) {
-    return null;
+    return "";
   }
 
   const expirationTimestamp = new Date();
@@ -68,5 +69,5 @@ function expirationTimestamp(body) {
     expirationTimestamp.getHours() + expirationHours
   );
 
-  return expirationTimestamp;
+  return expirationTimestamp.toISOString();
 }
