@@ -8,46 +8,47 @@ const { URLS_TABLE } = process.env;
 
 const BLANK_URL = "about:blank";
 
-exports.handler = async (event, context, callback) => {
+exports.handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
-  if (!event["body"]) {
-    callback("URL is required");
-  }
-
-  const body =
-    typeof event.body == "object" ? event.body : JSON.parse(event.body);
-
-  const url = sanitizeUrl(body.url);
-
-  if (!url || url === BLANK_URL) {
-    callback("Valid URL is required");
-  }
+  const body = getBody(event);
+  const url = getUrl(body.url);
 
   const now = new Date();
+  const expirationTimestamp = expirationDate(body.expirationHours);
+
   const shortlink = generateShortlink(now);
 
-  const expirationTimestamp = expirationDate(body);
   // TODO analytics?
-  await dynamodb
-    .put({
-      TableName: URLS_TABLE,
-      Item: {
-        shortlink,
-        fullUrl: url,
-        createdTimestamp: now.toISOString(),
-        expirationTimestamp,
-      },
-      ReturnConsumedCapacity: "TOTAL",
-      ConditionExpression: "attribute_not_exists(shortlink)",
-    })
-    .promise();
+  await saveUrlDetails({
+    shortlink,
+    fullUrl: url,
+    createdTimestamp: now.toISOString(),
+    expirationTimestamp,
+  });
 
   return {
     statusCode: 200,
     body: JSON.stringify({ shortlink, expirationTimestamp }),
   };
 };
+
+function getBody(event) {
+  if (!event["body"]) {
+    throw new Error("[400] URL is required");
+  }
+
+  return typeof event.body == "object" ? event.body : JSON.parse(event.body);
+}
+
+function getUrl(bodyUrl) {
+  const url = sanitizeUrl(bodyUrl);
+
+  if (!url || url === BLANK_URL) {
+    throw new Error("[400] Valid URL is required");
+  }
+  return url;
+}
 
 function generateShortlink(timestamp) {
   return encode(parseInt(timestamp.getTime() + "" + randomInt()));
@@ -57,9 +58,7 @@ function randomInt() {
   return Math.floor(Math.random() * 128);
 }
 
-function expirationDate(body) {
-  const { expirationHours } = body;
-
+function expirationDate(expirationHours) {
   if (!expirationHours) {
     return "";
   }
@@ -70,4 +69,15 @@ function expirationDate(body) {
   );
 
   return expirationTimestamp.toISOString();
+}
+
+async function saveUrlDetails(urlDetails) {
+  await dynamodb
+    .put({
+      TableName: URLS_TABLE,
+      Item: urlDetails,
+      ReturnConsumedCapacity: "TOTAL",
+      ConditionExpression: "attribute_not_exists(shortlink)",
+    })
+    .promise();
 }
