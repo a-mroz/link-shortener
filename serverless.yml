@@ -18,7 +18,7 @@ org: sadam36serverless
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 provider:
   name: aws
@@ -26,7 +26,7 @@ provider:
   apiGateway:
     shouldStartNameWithService: true
   environment:
-      URLS_TABLE: "urls-${opt:stage, self:provider.stage}"
+    URLS_TABLE: "urls-${opt:stage, self:provider.stage}"
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -159,12 +159,10 @@ resources:
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: "shortlink"
+          - AttributeName: "shortlink"
             AttributeType: "S"
         KeySchema:
-          -
-            AttributeName: "shortlink"
+          - AttributeName: "shortlink"
             KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -175,7 +173,6 @@ resources:
           AttributeName: "expirationTimestamp"
           Enabled: True
         TableName: "${self:provider.environment.URLS_TABLE}"
-
 
 plugins:
   # order is important
