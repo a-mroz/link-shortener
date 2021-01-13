@@ -8,28 +8,27 @@ const { URLS_TABLE } = process.env;
 
 const BLANK_URL = "about:blank";
 
-exports.handler = async (event) => {
+const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = getBody(event);
-  const url = getUrl(body.url);
+  const urlDetails = constructUrlDetails(body);
 
-  const now = new Date();
-  const expirationTimestamp = expirationDate(body.expirationHours);
-
-  const shortlink = generateShortlink(now);
-
-  // TODO analytics?
-  await saveUrlDetails({
-    shortlink,
-    fullUrl: url,
-    createdTimestamp: now.toISOString(),
-    expirationTimestamp,
-  });
+  await dynamodb
+    .put({
+      TableName: URLS_TABLE,
+      Item: urlDetails,
+      ReturnConsumedCapacity: "TOTAL",
+      ConditionExpression: "attribute_not_exists(shortlink)",
+    })
+    .promise();
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ shortlink, expirationTimestamp }),
+    body: JSON.stringify({
+      shortlink: urlDetails.shortlink,
+      expirationTimestamp: urlDetails.expirationTimestamp,
+    }),
   };
 };
 
@@ -39,6 +38,24 @@ function getBody(event) {
   }
 
   return typeof event.body == "object" ? event.body : JSON.parse(event.body);
+}
+
+function constructUrlDetails(body) {
+  const url = getUrl(body.url);
+
+  const now = new Date();
+  const expirationTimestamp = expirationDate(body.expirationHours);
+  const shortlink = generateShortlink(now);
+
+  // TODO analytics?
+  const urlDetails = {
+    shortlink,
+    fullUrl: url,
+    createdTimestamp: now.toISOString(),
+    expirationTimestamp,
+  };
+
+  return urlDetails;
 }
 
 function getUrl(bodyUrl) {
@@ -71,13 +88,5 @@ function expirationDate(expirationHours) {
   return expirationTimestamp.toISOString();
 }
 
-async function saveUrlDetails(urlDetails) {
-  await dynamodb
-    .put({
-      TableName: URLS_TABLE,
-      Item: urlDetails,
-      ReturnConsumedCapacity: "TOTAL",
-      ConditionExpression: "attribute_not_exists(shortlink)",
-    })
-    .promise();
-}
+exports.handler = handler;
+exports.constructUrlDetails = constructUrlDetails;
