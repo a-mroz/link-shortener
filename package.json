@@ -4,7 +4,7 @@
   "description": "Simple link-shortener to play with AWS",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "dev": "serverless offline",
     "deploy": "serverless deploy",
     "dynamodb": "serverless dynamodb start"
