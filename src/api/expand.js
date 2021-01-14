@@ -1,6 +1,6 @@
 "use strict";
-const dynamodb = require("serverless-dynamodb-client").doc;
-const { URLS_TABLE } = process.env;
+
+const urlDetailsDao = require("../services/urlDetailsDao");
 const get = require("lodash/get");
 
 exports.handler = async (event) => {
@@ -8,7 +8,7 @@ exports.handler = async (event) => {
 
   const shortlink = extractShortlink(event);
 
-  const urlDetails = await fetchUrlDetails(shortlink);
+  const urlDetails = await urlDetailsDao.findByShortlink(shortlink);
   console.log(urlDetails);
 
   if (!urlDetails || isUrlExpired(urlDetails)) {
@@ -33,21 +33,6 @@ function extractShortlink(event) {
   }
 
   return shortlink;
-}
-
-async function fetchUrlDetails(shortlink) {
-  const items = await dynamodb
-    .get({
-      TableName: URLS_TABLE,
-      Key: {
-        shortlink,
-      },
-
-      ProjectionExpression: "shortlink,fullUrl,expirationTimestamp",
-    })
-    .promise();
-
-  return items.Item;
 }
 
 // This should be removed by Dynamo TTL feature, but just in case

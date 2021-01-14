@@ -1,10 +1,8 @@
 "use strict";
 
-const dynamodb = require("serverless-dynamodb-client").doc;
+const urlDetailsDao = require("../services/urlDetailsDao");
 const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
 const { encode } = require("../services/base58Encoder");
-
-const { URLS_TABLE } = process.env;
 
 const BLANK_URL = "about:blank";
 
@@ -14,14 +12,7 @@ const handler = async (event) => {
   const body = getBody(event);
   const urlDetails = constructUrlDetails(body);
 
-  await dynamodb
-    .put({
-      TableName: URLS_TABLE,
-      Item: urlDetails,
-      ReturnConsumedCapacity: "TOTAL",
-      ConditionExpression: "attribute_not_exists(shortlink)",
-    })
-    .promise();
+  await urlDetailsDao.save(urlDetails);
 
   return {
     statusCode: 200,
