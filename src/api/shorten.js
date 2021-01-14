@@ -2,7 +2,7 @@
 
 const dynamodb = require("serverless-dynamodb-client").doc;
 const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
-const { encode } = require("./base58Encoder");
+const { encode } = require("../services/base58Encoder");
 
 const { URLS_TABLE } = process.env;
 

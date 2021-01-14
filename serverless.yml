@@ -77,7 +77,7 @@ functions:
           method: POST
           request:
             schema:
-              application/json: ${file(src/api/shorten_schema.json)}
+              application/json: ${file(src/resources/shorten_schema.json)}
 
   expand:
     handler: src/api/expand.handler

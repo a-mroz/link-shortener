@@ -1,0 +1,6 @@
+{
+  "body": {
+    "url": "http://www.example.com",
+    "expirationHours": 24
+  }
+}
