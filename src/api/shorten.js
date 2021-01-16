@@ -25,7 +25,7 @@ const handler = async (event) => {
 
 function getBody(event) {
   if (!event["body"]) {
-    throw new Error("[400] URL is required");
+    throw Error("[400] URL is required");
   }
 
   return typeof event.body == "object" ? event.body : JSON.parse(event.body);
@@ -53,7 +53,7 @@ function getUrl(bodyUrl) {
   const url = sanitizeUrl(bodyUrl);
 
   if (!url || url === BLANK_URL) {
-    throw new Error("[400] Valid URL is required");
+    throw Error("[400] Valid URL is required");
   }
   return url;
 }

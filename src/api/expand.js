@@ -7,6 +7,7 @@ exports.handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const shortlink = extractShortlink(event);
+  console.log(`Processing shortlink: ${shortlink}`);
 
   const urlDetails = await urlDetailsDao.findByShortlink(shortlink);
   console.log(urlDetails);
@@ -29,7 +30,7 @@ function extractShortlink(event) {
   const shortlink = get(event, "pathParameters.shortlink");
 
   if (!shortlink) {
-    throw new Error("[400] Invalid shortlink");
+    throw Error("[400] Invalid shortlink");
   }
 
   return shortlink;
