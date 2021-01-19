@@ -80,4 +80,3 @@ function expirationDate(expirationHours) {
 }
 
 exports.handler = handler;
-exports.constructUrlDetails = constructUrlDetails;
